@@ -1,4 +1,4 @@
-package my.dxWeather;
+package dxWeather;
 
 import java.io.*;
 import java.net.*;

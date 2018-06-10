@@ -1,4 +1,4 @@
-package my.dxWeather;
+package dxWeather;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
