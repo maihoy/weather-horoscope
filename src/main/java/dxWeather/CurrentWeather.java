@@ -1,30 +1,22 @@
 package dxWeather;
 
-import java.io.*;
-import java.net.*;
-
-
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class CurrentWeather {
-    String lat;
-    String lon;
+
     String apiKey;
     String url;
     String data;
     char tempUnit;
 
     private static final Logger LOG = Logger.getLogger(CurrentWeather.class);
-
-    public void setLan(String lanPassed) {
-        lat = lanPassed;
-    }
-
-    public void setLon(String lonPassed) {
-        lon = lonPassed;
-    }
 
     public void setUnit() {
         tempUnit = 'C';
@@ -67,7 +59,7 @@ public class CurrentWeather {
             JSONObject allData = new JSONObject(data);
             JSONObject mainObj = new JSONObject(allData.getJSONObject("main").toString());
             JSONObject sys = new JSONObject(allData.getJSONObject("sys").toString());
-LOG.debug(allData);
+            LOG.debug(allData);
             JSONArray jsonarray = new JSONArray(allData.get("weather").toString());
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
@@ -82,17 +74,11 @@ LOG.debug(allData);
             weatherData[2] = String.valueOf(tmpWeather); //String Temperature
             weatherData[3] = String.valueOf(humidity) + " %"; //String Humidity
 
+            weatherData[4] = String.valueOf(minTemp) + " °C"; //Min Temp in Celcius
+            weatherData[5] = String.valueOf(maxTemp) + " °C"; //Max Temp in Celcius
 
-            //Temp Data
-            if (tempUnit == 'C') {
-                weatherData[4] = String.valueOf(minTemp) + " °C"; //Min Temp in Celcius
-                weatherData[5] = String.valueOf(maxTemp) + " °C"; //Max Temp in Celcius
-            } else if (tempUnit == 'F') {
-                weatherData[4] = String.valueOf(minTemp) + " °F"; //Min Temp in Fahrenheit
-                weatherData[5] = String.valueOf(maxTemp) + " °F"; //Max Temp in Fahrenheit
-            }
         } catch (Exception e) {
-            LOG.error("",e);
+            LOG.error("", e);
             LOG.error(data);
         }
         return weatherData;

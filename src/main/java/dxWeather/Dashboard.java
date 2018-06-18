@@ -11,9 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,15 +22,10 @@ public class Dashboard extends JFrame {
     private JTextField apiKey;
     private JButton goButton;
     private JLabel title;
-
-    private JLabel latitude;
-    private JLabel longitude;
     private JLabel mapApiKey;
     private JLabel celsius;
 
-    private JTextField latCoords;
-    private JTextField lonCoords;
-    wWidget w = new wWidget();
+    Widget w = new Widget();
 
 
     public Dashboard() {
@@ -44,11 +36,6 @@ public class Dashboard extends JFrame {
     private void initComponents() {
 
         title = new JLabel();
-
-        latCoords = new JTextField();
-        latitude = new JLabel();
-        longitude = new JLabel();
-        lonCoords = new JTextField();
         mapApiKey = new JLabel();
         apiKey = new JTextField();
         goButton = new JButton();
@@ -58,42 +45,23 @@ public class Dashboard extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setType(Window.Type.UTILITY);
 
-        title.setFont(new java.awt.Font("Courier 10 Pitch", 0, 36)); // NOI18N
-        title.setText("DX Weather");
-        latitude.setText("Latitute");
-        longitude.setText("Longitude");
         mapApiKey.setText("OpenWeatherMap API Key");
         apiKey.setText("6c08c0cdb135cfa3bc45f667bd2ab819");
+        apiKey.setEditable(false);
         goButton.setText("GO!");
 
-        goButton.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                jButton1FocusGained(evt);
-            }
-        });
         goButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                goButtonAction(evt);
             }
         });
 
         celsius.setText("Celcius");
 
-
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addGap(23, 23, 23)
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(longitude)
-                                        .addComponent(latitude))
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(latCoords, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(lonCoords, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE))
-                                .addGap(41, 41, 41))
                         .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
@@ -118,16 +86,6 @@ public class Dashboard extends JFrame {
                                 .addComponent(title)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(latitude)
-                                                        .addComponent(latCoords, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(lonCoords, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(longitude))))
-                                .addGap(31, 31, 31)
                                 .addComponent(mapApiKey)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(apiKey, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -141,24 +99,12 @@ public class Dashboard extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    private void jButton1FocusGained(java.awt.event.FocusEvent evt) {
-
-    }
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    private void goButtonAction(ActionEvent evt) {
 
         final CurrentWeather weatherObj = new CurrentWeather();
-
-        String latitude = latCoords.getText();
-        String longitude = lonCoords.getText();
         String appKey = apiKey.getText();
-
-
-        weatherObj.setLan(latitude);
-        weatherObj.setLon(longitude);
         weatherObj.setApiKey(appKey);
         weatherObj.setUnit();
-
         weatherObj.finalize();
 
         IpUtils.getInstance().getIPInfo();
@@ -169,7 +115,6 @@ public class Dashboard extends JFrame {
             LOG.info("Successfully downloaded DATA!");
 
             String weatherData[] = weatherObj.getAllData();
-
 
             w.setTemperature(weatherData[2]);
             w.setUnit("°" + weatherObj.tempUnit);

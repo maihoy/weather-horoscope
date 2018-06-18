@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class Horoscope {
     private static final Logger LOG = Logger.getLogger(CurrentWeather.class);
-
+public static String horoscopeText;
     void parse (){
         try {
             Document doc = Jsoup.connect("http://1001goroskop.ru/?znak=aries").get();
@@ -18,6 +18,7 @@ public class Horoscope {
             Elements newsHeadlines = doc.select("#eje_text");
             for (Element headline : newsHeadlines) {
                 headline= headline.select("p").first();
+                horoscopeText= headline.ownText();
                 LOG.debug(
                         headline.ownText());
             }
