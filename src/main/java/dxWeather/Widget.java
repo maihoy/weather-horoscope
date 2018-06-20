@@ -13,9 +13,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class Widget extends javax.swing.JFrame
-{
+public class Widget extends JFrame {
     private final static Logger LOG = Logger.getLogger(Widget.class);
+    private static final int TIMER_DELAY = 5000;
+    private static final int SCROLL_AMOUNT = 25;
     String temperature;
     String weatherDescription;
     String location;
@@ -36,52 +37,45 @@ public class Widget extends javax.swing.JFrame
     private JLabel locationLabel;
     private JLabel tempLabel;
     private JLabel tempUnitLabel;
-    private JLabel horoscope;
+    private JTextArea horoscope;
 
-    public void setLocationName(String locationNamePassed)
-    {
+    public void setLocationName(String locationNamePassed) {
         location = locationNamePassed;
     }
-    
-    public void setTemperature(String tempPassed)
-    {
+
+    public void setTemperature(String tempPassed) {
         temperature = tempPassed;
     }
-    
-    public void setWeatherDescription(String weatherDescriptionPassed)
-    {
+
+    public void setWeatherDescription(String weatherDescriptionPassed) {
         weatherDescription = weatherDescriptionPassed;
     }
-    
-    public void setHumidity(String humidityPassed)
-    {
+
+    public void setHumidity(String humidityPassed) {
         humidity = humidityPassed;
     }
-    
-    public void setMaxTemp(String maxTempPassed)
-    {
+
+    public void setMaxTemp(String maxTempPassed) {
         maxTemp = maxTempPassed;
     }
-    
-    public void setMinTemp(String minTempPassed)
-    {
+
+    public void setMinTemp(String minTempPassed) {
         minTemp = minTempPassed;
     }
-    
-    public void setUnit(String unitPassed)
-    {
+
+    public void setUnit(String unitPassed) {
         tempUnitLabel.setText(unitPassed);
     }
-    
-    public void refresh()
-    {
+
+    public void refresh() {
         tempLabel.setText(temperature);
         locationLabel.setText(location);
-        descriptionLabel.setText(weatherDescription);  
+        descriptionLabel.setText(weatherDescription);
         jLabel6.setText(humidity);
         jLabel5.setText(maxTemp);
         jLabel7.setText(minTemp);
         horoscope.setText(Horoscope.horoscopeText);
+
     }
 
     public Widget() {
@@ -103,7 +97,7 @@ public class Widget extends javax.swing.JFrame
         jLabel7 = new JLabel();
         exitButton = new JButton();
         jLabel9 = new JLabel();
-        horoscope = new JLabel();
+        horoscope = new JTextArea();
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Widget");
@@ -134,9 +128,26 @@ public class Widget extends javax.swing.JFrame
         descriptionLabel.setBounds(10, 80, 130, 23);
 
         horoscope.setText("");
+        horoscope.setLineWrap(true);
+        horoscope.setEditable(false);
+        horoscope.setWrapStyleWord(true);
         horoscope.setAutoscrolls(true);
-        jPanel4.add(horoscope);
-        horoscope.setBounds(10, 100, 250, 50);
+        JScrollPane scrollPane = new JScrollPane(horoscope);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        // scrollPane.getViewport().setPreferredSize(VIEWPORT_SIZE);
+
+        // add(scrollPane);
+        // *** extract the BoundedRangeModel from the vertical scroll bar
+        BoundedRangeModel barModel = scrollPane.getVerticalScrollBar().getModel();
+        new Timer(TIMER_DELAY, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                timerActionPerformed(e, barModel);
+            }
+        }).start();
+
+        jPanel4.add(scrollPane);
+        scrollPane.setBounds(10, 110, 250, 55);
 
         humidityLabel.setText("Humidity :");
         jPanel4.add(humidityLabel);
@@ -163,11 +174,13 @@ public class Widget extends javax.swing.JFrame
         jLabel7.setBounds(240, 70, 49, 18);
 
         exitButton.setText("x");
-        exitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                exitButtonActionPerformed(evt);
-            }
-        });
+        exitButton.addActionListener
+                (new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        exitButtonActionPerformed(evt);
+                    }
+                });
+
         jPanel4.add(exitButton);
         exitButton.setBounds(270, 140, 30, 30);
 
@@ -175,19 +188,17 @@ public class Widget extends javax.swing.JFrame
         jPanel4.add(jLabel9);
         jLabel9.setBounds(0, 0, 300, 170);
 
-
-
         GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        getContentPane()
+                .setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
-
         pack();
     }
 
@@ -195,26 +206,18 @@ public class Widget extends javax.swing.JFrame
         LOG.info("Sucessfully closed!");
         System.exit(0);
     }
-    public void main() {
 
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            LOG.error("", ex);
+    private void timerActionPerformed(ActionEvent e, BoundedRangeModel barModel) {
+        int newModelValue = barModel.getValue();  // Get the model's curent value
+        if (newModelValue < barModel.getMaximum() - barModel.getExtent()) {  // if not at max
+            newModelValue += SCROLL_AMOUNT; // add something to it
+            barModel.setValue(newModelValue);  // and change the model's value
+        } else {
+            barModel.setValue(barModel.getMinimum());
         }
-
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Widget().setVisible(true);
-                
-            }
-        });
     }
 
-
+    public void getNextHoroscope() {
+        Horoscope.getInstance().parse();
+    }
 }

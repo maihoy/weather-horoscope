@@ -27,7 +27,7 @@ public class CurrentWeather {
     }
 
     public void finalize() {
-        new Horoscope().parse();
+
         JSONObject ipInfo = IpUtils.getInstance().getIPInfo();
         url = "http://api.openweathermap.org/data/2.5/weather?q=" + ipInfo.getString("city") + "," + ipInfo.getString("countryCode") + "&appid=" + apiKey + "&units=metric";
     }

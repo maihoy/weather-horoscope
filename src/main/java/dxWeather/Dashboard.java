@@ -124,6 +124,7 @@ public class Dashboard extends JFrame {
             w.setMinTemp(weatherData[4]);
             w.setMaxTemp(weatherData[5]);
             w.setVisible(true);
+            w.getNextHoroscope();
             w.refresh();
 
             dispose();
@@ -148,6 +149,7 @@ public class Dashboard extends JFrame {
                     w.setMinTemp(weatherData[4]);
                     w.setMaxTemp(weatherData[5]);
                     w.setVisible(true);
+                    w.getNextHoroscope();
                     w.refresh();
                 } else {
                     LOG.error("Failed to download data. Check your network connection or config");
@@ -158,7 +160,7 @@ public class Dashboard extends JFrame {
             }
         };
 
-        timer.schedule(myTask, 15000, 15000);
+        timer.schedule(myTask, 35000, 35000);
 
     }
 
